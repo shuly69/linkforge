@@ -1,0 +1,69 @@
+// LinkForge data model.
+// PostgreSQL is the system of record; Redis (see RedisService) is only a
+// cache / rate-limit store and never holds durable state.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  role         Role     @default(USER)
+  links        Link[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Link {
+  id         String    @id @default(cuid())
+  // Short code used in the redirect path (/:code). Also the custom alias.
+  code       String    @unique
+  url        String    @db.Text
+  isActive   Boolean   @default(true)
+  expiresAt  DateTime?
+  // Denormalized counter kept in sync with Click rows for cheap list reads.
+  clickCount Int       @default(0)
+
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId String
+
+  clicks    Click[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownerId])
+  @@map("links")
+}
+
+model Click {
+  id       String @id @default(cuid())
+  link     Link   @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  linkId   String
+
+  // Coarse analytics dimensions. IP is hashed before storage (see AnalyticsService).
+  ipHash    String?
+  referrer  String?
+  country   String?
+  device    String? // desktop | mobile | tablet | bot | unknown
+  userAgent String?  @db.Text
+
+  createdAt DateTime @default(now())
+
+  @@index([linkId, createdAt])
+  @@map("clicks")
+}

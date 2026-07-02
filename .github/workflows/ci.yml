@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: linkforge
+          POSTGRES_PASSWORD: linkforge
+          POSTGRES_DB: linkforge_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U linkforge"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://linkforge:linkforge@localhost:5432/linkforge_test?schema=public
+      REDIS_URL: redis://localhost:6379
+      JWT_ACCESS_SECRET: ci-access-secret-value
+      JWT_REFRESH_SECRET: ci-refresh-secret-value
+      SHORT_LINK_BASE_URL: http://localhost:4000
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build shared package
+        run: pnpm --filter @linkforge/shared build
+
+      - name: Generate Prisma client
+        run: pnpm --filter @linkforge/api prisma:generate
+
+      - name: Apply migrations
+        run: pnpm --filter @linkforge/api prisma migrate deploy
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
