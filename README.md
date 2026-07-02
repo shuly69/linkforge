@@ -6,7 +6,7 @@
 
 Type-safe full-stack monorepo — one Zod contract shared between a **Next.js 15** frontend and a **NestJS** backend, backed by **PostgreSQL**, **Prisma** and **Redis**.
 
-[![CI](https://github.com/your-username/linkforge/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/linkforge/actions/workflows/ci.yml)
+[![CI](https://github.com/shuly69/linkforge/actions/workflows/ci.yml/badge.svg)](https://github.com/shuly69/linkforge/actions/workflows/ci.yml)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
 ![NestJS](https://img.shields.io/badge/NestJS-10-e0234e)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178c6)
