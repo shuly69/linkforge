@@ -65,7 +65,7 @@ jobs:
         run: pnpm --filter @linkforge/api prisma:generate
 
       - name: Apply migrations
-        run: pnpm --filter @linkforge/api prisma migrate deploy
+        run: pnpm --filter @linkforge/api prisma:migrate
 
       - name: Lint
         run: pnpm lint
