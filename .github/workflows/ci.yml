@@ -73,8 +73,11 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
-      - name: Test
+      - name: Test (unit)
         run: pnpm test
+
+      - name: Test (e2e)
+        run: pnpm --filter @linkforge/api test:e2e
 
       - name: Build
         run: pnpm build

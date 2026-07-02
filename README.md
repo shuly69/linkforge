@@ -16,6 +16,12 @@ Type-safe full-stack monorepo — one Zod contract shared between a **Next.js 15
 
 ---
 
+## Demo
+
+Create a link, share it, watch the clicks land in analytics — end to end:
+
+![LinkForge demo](docs/screenshots/demo.gif)
+
 ## Screenshots
 
 |                    Landing                     |                     Dashboard                      |
@@ -97,7 +103,7 @@ Most portfolio apps stop at a CRUD wrapper around a database. LinkForge is built
 | Cache / limits | **Redis 7** (ioredis)         | Read-through redirect cache + rate limiting.                         |
 | Auth           | **JWT** (access + refresh), Passport, **Argon2** | Argon2id hashing; rotating refresh tokens.        |
 | Validation     | **Zod** (shared)              | One schema, two runtimes.                                            |
-| Testing        | **Jest**                      | Service and pipe unit tests.                                         |
+| Testing        | **Jest + Supertest**          | Unit tests + an e2e suite covering register → redirect → analytics.  |
 | CI             | **GitHub Actions**            | Lint · typecheck · test · build against live Postgres + Redis.       |
 | Delivery       | **Docker + Compose**          | Multi-stage images; one command to run everything.                   |
 
@@ -223,7 +229,6 @@ Base path: `/v1` · Interactive docs at `/docs` (Swagger, non-prod).
 Honest scope boundaries for a focused portfolio piece:
 
 - Refresh-token rotation with server-side revocation (jti allow-list in Redis).
-- E2E tests (`supertest`) covering the redirect + analytics path.
 - GeoIP enrichment for real country breakdowns.
 - QR code generation and link expiry cron cleanup.
 - OpenTelemetry traces + a Grafana dashboard.
@@ -237,9 +242,12 @@ pnpm dev          # run web + api in watch mode (Turborepo)
 pnpm build        # build all packages
 pnpm lint         # eslint across the monorepo
 pnpm typecheck    # tsc --noEmit across the monorepo
-pnpm test         # jest (api)
+pnpm test         # unit tests (api)
 pnpm db:migrate   # prisma migrate deploy
 pnpm db:seed      # seed demo data
+
+# e2e (needs Postgres + Redis running — see Quick start)
+pnpm --filter @linkforge/api test:e2e
 ```
 
 ## License
