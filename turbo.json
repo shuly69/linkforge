@@ -9,7 +9,8 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "passThroughEnv": ["PORT", "API_PORT", "NEXT_PUBLIC_API_URL"]
     },
     "lint": {
       "dependsOn": ["^build"]
