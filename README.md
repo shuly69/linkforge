@@ -16,6 +16,18 @@ Type-safe full-stack monorepo — one Zod contract shared between a **Next.js 15
 
 ---
 
+## Screenshots
+
+|                    Landing                     |                     Dashboard                      |
+| :--------------------------------------------: | :------------------------------------------------: |
+| ![Landing page](docs/screenshots/01-landing.png) | ![Dashboard](docs/screenshots/03-dashboard.png) |
+
+|                     Per-link analytics                     |
+| :--------------------------------------------------------: |
+| ![Link analytics](docs/screenshots/04-analytics.png) |
+
+---
+
 ## Why this project exists
 
 Most portfolio apps stop at a CRUD wrapper around a database. LinkForge is built to demonstrate the parts that actually come up in production work:
